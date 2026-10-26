@@ -1,0 +1,18 @@
+[build]
+target = "thumbv8m.main-none-eabihf"
+
+[net]
+# The HAL comes from a git dependency over SSH; cargo's built-in libgit2 cannot
+# complete the SSH handshake on this machine, the `git` binary can.
+git-fetch-with-cli = true
+
+[target.thumbv8m.main-none-eabihf]
+rustflags = [
+    "-C", "link-arg=--nmagic",
+    "-C", "link-arg=-Tlink.x",
+]
+# `cargo run` flashes the firmware with probe-rs and attaches RTT, so the
+# `rprintln!` output of the demo shows up in the terminal. The wrapper also
+# programs the `.sfc_xip` section (pictures + code that runs from the SPI NOR)
+# whenever it changes: see tools/run.sh.
+runner = "tools/run.sh"

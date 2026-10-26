@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <radialGradient id="bodyGrad" cx="0.42" cy="0.32" r="0.8">
+      <stop offset="0%" stop-color="#F98D60"/>
+      <stop offset="55%" stop-color="#F06B3E"/>
+      <stop offset="100%" stop-color="#DE522A"/>
+    </radialGradient>
+    <linearGradient id="clawGrad" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#F98D60"/>
+      <stop offset="100%" stop-color="#E85F33"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 白色背景 -->
+  <rect width="400" height="300" fill="#ffffff"/>
+
+  <!-- ============ 腿（在身体下层） ============ -->
+  <g stroke="#B8431F" stroke-width="2.2" stroke-linejoin="round">
+    <!-- 左后腿 -->
+    <path d="M 140 225 Q 110 235, 96 260 Q 92 268, 98 271 Q 104 273, 107 265 Q 118 242, 145 235 Z" fill="url(#bodyGrad)"/>
+    <!-- 左中腿 -->
+    <path d="M 130 238 Q 102 252, 92 276 Q 89 284, 95 287 Q 101 288, 104 280 Q 112 258, 138 248 Z" fill="url(#bodyGrad)"/>
+    <!-- 左前腿 -->
+    <path d="M 150 244 Q 126 264, 122 286 Q 121 294, 127 295 Q 133 295, 135 287 Q 139 266, 160 252 Z" fill="url(#bodyGrad)"/>
+
+    <!-- 右后腿 -->
+    <path d="M 260 225 Q 290 235, 304 260 Q 308 268, 302 271 Q 296 273, 293 265 Q 282 242, 255 235 Z" fill="url(#bodyGrad)"/>
+    <!-- 右中腿 -->
+    <path d="M 270 238 Q 298 252, 308 276 Q 311 284, 305 287 Q 299 288, 296 280 Q 288 258, 262 248 Z" fill="url(#bodyGrad)"/>
+    <!-- 右前腿 -->
+    <path d="M 250 244 Q 274 264, 278 286 Q 279 294, 273 295 Q 267 295, 265 287 Q 261 266, 240 252 Z" fill="url(#bodyGrad)"/>
+  </g>
+
+  <!-- ============ 钳臂（在身体下层） ============ -->
+  <path d="M 150 178 Q 120 176, 104 156 Q 98 148, 102 140 Q 106 133, 114 138 Q 130 152, 156 162 Z" fill="url(#clawGrad)" stroke="#B8431F" stroke-width="2.2"/>
+  <path d="M 250 178 Q 280 176, 296 156 Q 302 148, 298 140 Q 294 133, 286 138 Q 270 152, 244 162 Z" fill="url(#clawGrad)" stroke="#B8431F" stroke-width="2.2"/>
+
+  <!-- ============ 身体 ============ -->
+  <path d="M 102 188
+           Q 102 148, 142 136
+           Q 158 131, 172 134
+           Q 186 130, 200 130
+           Q 214 130, 228 134
+           Q 242 131, 258 136
+           Q 298 148, 298 188
+           Q 298 235, 200 240
+           Q 102 235, 102 188 Z"
+        fill="url(#bodyGrad)" stroke="#B8431F" stroke-width="2.5"/>
+
+  <!-- 身体高光 -->
+  <ellipse cx="163" cy="163" rx="26" ry="13" fill="#FAA078" opacity="0.5" transform="rotate(-15 163 163)"/>
+
+  <!-- ============ 左钳子 ============ -->
+  <g>
+    <!-- 外轮廓 -->
+    <path d="M 116 148
+             C 92 140, 78 122, 76 100
+             C 74 78, 84 60, 104 54
+             C 118 50, 134 52, 141 61
+             C 146 68, 143 77, 136 80
+             C 128 83, 124 90, 126 100
+             C 129 115, 140 130, 156 140
+             C 163 145, 160 154, 152 157
+             C 140 161, 124 156, 116 148 Z"
+          fill="url(#clawGrad)" stroke="#B8431F" stroke-width="2.2"/>
+    <!-- 内侧掌部（米色） -->
+    <path d="M 100 78
+             C 90 86, 85 98, 87 110
+             C 89 122, 98 132, 110 134
+             C 117 135, 122 131, 121 125
+             C 120 119, 115 116, 111 112
+             C 104 106, 102 94, 107 83 Z"
+          fill="#F2C89B" stroke="#D9A870" stroke-width="1.2"/>
+    <!-- 钳子高光 -->
+    <ellipse cx="93" cy="82" rx="7" ry="13" fill="#FAA078" opacity="0.45" transform="rotate(18 93 82)"/>
+  </g>
+
+  <!-- ============ 右钳子 ============ -->
+  <g>
+    <path d="M 284 148
+             C 308 140, 322 122, 324 100
+             C 326 78, 316 60, 296 54
+             C 282 50, 266 52, 259 61
+             C 254 68, 257 77, 264 80
+             C 272 83, 276 90, 274 100
+             C 271 115, 260 130, 244 140
+             C 237 145, 240 154, 248 157
+             C 260 161, 276 156, 284 148 Z"
+          fill="url(#clawGrad)" stroke="#B8431F" stroke-width="2.2"/>
+    <path d="M 300 78
+             C 310 86, 315 98, 313 110
+             C 311 122, 302 132, 290 134
+             C 283 135, 278 131, 279 125
+             C 280 119, 285 116, 289 112
+             C 296 106, 298 94, 293 83 Z"
+          fill="#F2C89B" stroke="#D9A870" stroke-width="1.2"/>
+    <ellipse cx="307" cy="82" rx="7" ry="13" fill="#FAA078" opacity="0.45" transform="rotate(-18 307 82)"/>
+  </g>
+
+  <!-- ============ 眼睛柄（短） ============ -->
+  <path d="M 178 134 L 177 120 Q 177 115, 181 115 Q 185 115, 185 120 L 186 134 Z" fill="url(#bodyGrad)" stroke="#B8431F" stroke-width="2"/>
+  <path d="M 222 134 L 223 120 Q 223 115, 219 115 Q 215 115, 215 120 L 214 134 Z" fill="url(#bodyGrad)" stroke="#B8431F" stroke-width="2"/>
+
+  <!-- ============ 眼睛 ============ -->
+  <circle cx="181" cy="110" r="13" fill="#1A1A1A"/>
+  <circle cx="185" cy="105" r="4.5" fill="white"/>
+  <circle cx="219" cy="110" r="13" fill="#1A1A1A"/>
+  <circle cx="223" cy="105" r="4.5" fill="white"/>
+
+  <!-- ============ 微笑嘴巴 ============ -->
+  <path d="M 182 194 Q 200 206, 218 194" fill="none" stroke="#8B3518" stroke-width="3" stroke-linecap="round"/>
+</svg>

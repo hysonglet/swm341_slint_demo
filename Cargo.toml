@@ -1,0 +1,80 @@
+[package]
+name = "swm341-slint"
+version = "0.1.0"
+edition = "2021"
+description = "Slint GUI demo for the Synwit SWM341: RGB TFT driven by the LCDC, framebuffer in SDRAM"
+license = "MIT"
+
+default-run = "swm341-slint"
+
+[[bin]]
+name = "swm341-slint"
+test = false
+bench = false
+
+[dependencies]
+# Taken from git rather than a sibling checkout, so the demo builds stand-alone.
+# Pin `rev = "<sha>"` instead of `branch` when a build has to be reproducible.
+# Cargo wants an explicit scheme here: the scp-style `git@github.com:user/repo`
+# shorthand is rejected ("relative URL without a base").
+#
+# `embassy` is on (as in the HAL's defaults): it adds the async driver flavours
+# and -- more importantly here -- the time driver, which `hal::init` installs on
+# the SysTick. Everything time-based in this demo then goes through
+# `embassy_time`, and the UI can hand long work to a task instead of blocking.
+swm341-hal = { git = "ssh://git@github.com/hysonglet/swm341-hal.git", branch = "main", default-features = false, features = ["embassy"] }
+
+# Single-core executor running on the main thread: every Slint call stays on one
+# thread, which is what the `unsafe-single-threaded` Slint build requires.
+embassy-executor = { version = "0.7", features = ["arch-cortex-m", "executor-thread"] }
+embassy-time = { version = "0.4", features = ["tick-hz-1_000"] }
+# Channel between the loader task and the UI task.
+embassy-sync = "0.6"
+# `yield_now()`: hand the core back to the executor between UI frames.
+embassy-futures = "0.1"
+
+# Slint allocates: put the heap in external SDRAM, not in the 64K of SRAM.
+embedded-alloc = "0.5"
+cortex-m = { version = "0.7.7", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7.3"
+panic-halt = "0.2"
+rtt-target = "0.5"
+
+# NOTE: everything below this table up to the next `[...]` header belongs to
+# `slint` -- keep this block last in the manifest.
+[dependencies.slint]
+version = "1.18"
+default-features = false
+features = [
+    # Mandatory when running without the default features: keeps the APIs that
+    # Slint only hands out behind "compat" gates available.
+    "compat-1-2",
+    # Pure software rasterizer (no GPU required).
+    "renderer-software",
+    # `thread_local!` needs std: fall back to unsafe statics instead. Every Slint
+    # call must then come from one thread only (never from an interrupt handler).
+    "unsafe-single-threaded",
+    # Floating point math without std.
+    "libm",
+]
+
+[build-dependencies]
+slint-build = "1.18"
+# Turns `assets/*.svg` into bitmaps at build time (pure Rust: no cairo/rsvg
+# installed). Rasterising here, rather than in the Python packer, keeps the
+# artwork pipeline to one toolchain -- see `rasterize_svgs` in build.rs.
+resvg = "0.45"
+
+[profile.release]
+codegen-units = 1
+debug = 1
+incremental = false
+lto = true
+opt-level = "s"
+
+[profile.dev]
+codegen-units = 1
+debug = 1
+incremental = false
+lto = true
+opt-level = "s"

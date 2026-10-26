@@ -1,0 +1,267 @@
+// Demo UI for the SWM341 Slint template.
+//
+// Everything here is plain built-in Slint elements (no std-widgets import) so
+// the generated code stays small enough for the 512K flash. All labels are
+// ASCII: embedding a CJK font costs megabytes of flash. See README.md for how
+// to add a subsetted Chinese font.
+//
+// The gallery block reads its picture from external SPI NOR flash: the Rust
+// side hands it over through the `picture` property, so the UI itself never
+// touches the SFC.
+
+export component MainWindow inherits Window {
+    width: 800px;
+    height: 480px;
+    background: #0d1117;
+
+    in-out property <int> uptime-seconds: 0;
+    in-out property <int> clicks: 0;
+    in-out property <float> level: 0.15;
+    property <int> step: 0;
+
+    // The picture on screen, loaded from external flash by the Rust side.
+    in-out property <image> picture;
+    in-out property <int> picture-index: 0;
+    in-out property <int> picture-count: 0;
+
+    callback tick();
+    callback next-picture();
+    callback prev-picture();
+
+    // Self-demo: the screen keeps changing even without a touch panel attached,
+    // which proves timers, animations and the event loop are alive.
+    Timer {
+        interval: 1s;
+        running: true;
+        triggered => {
+            root.uptime-seconds += 1;
+            root.step += 1;
+            root.level = Math.mod(root.step, 12) / 12;
+            root.tick();
+        }
+    }
+
+    // Slideshow: advance the gallery every five seconds.
+    Timer {
+        interval: 5s;
+        running: root.picture-count > 0;
+        triggered => {
+            root.next-picture();
+        }
+    }
+
+    VerticalLayout {
+        padding: 24px;
+        spacing: 16px;
+
+        // Header
+        Rectangle {
+            height: 64px;
+            background: #161b22;
+            border-radius: 10px;
+            HorizontalLayout {
+                padding-left: 20px;
+                padding-right: 20px;
+                alignment: space-between;
+                Text {
+                    text: "SWM341 + Slint";
+                    color: #e6edf3;
+                    font-size: 28px;
+                    font-weight: 700;
+                    vertical-alignment: center;
+                }
+                Text {
+                    text: "gallery \\ SPI-NOR \\ embassy";
+                    color: #7d8590;
+                    font-size: 16px;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // Body: gallery on the left, controls on the right.
+        HorizontalLayout {
+            spacing: 16px;
+
+            // Gallery: the picture is shown at its native size (480x320), so
+            // the renderer never has to scale it.
+            Rectangle {
+                width: 480px;
+                background: #000000;
+                border-radius: 10px;
+                clip: true;
+                if root.picture-count == 0 : Text {
+                    text: "no assets in flash";
+                    color: #7d8590;
+                    font-size: 18px;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+                Image {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    width: 480px;
+                    height: 320px;
+                    image-fit: fill;
+                    source: root.picture;
+                }
+            }
+
+            VerticalLayout {
+                spacing: 12px;
+
+                // Uptime card
+                Rectangle {
+                    background: #161b22;
+                    border-radius: 10px;
+                    VerticalLayout {
+                        padding: 16px;
+                        spacing: 4px;
+                        Text {
+                            text: "UPTIME";
+                            color: #7d8590;
+                            font-size: 14px;
+                        }
+                        Text {
+                            text: "\{root.uptime-seconds} s";
+                            color: #58a6ff;
+                            font-size: 36px;
+                            font-weight: 700;
+                        }
+                    }
+                }
+
+                // Gallery controls
+                Rectangle {
+                    background: #161b22;
+                    border-radius: 10px;
+                    VerticalLayout {
+                        padding: 16px;
+                        spacing: 10px;
+                        alignment: center;
+                        Text {
+                            text: "GALLERY";
+                            color: #7d8590;
+                            font-size: 14px;
+                        }
+                        Text {
+                            text: root.picture-count > 0
+                                ? "picture \{root.picture-index + 1} / \{root.picture-count}"
+                                : "flash empty";
+                            color: #e6edf3;
+                            font-size: 18px;
+                        }
+                        HorizontalLayout {
+                            alignment: center;
+                            spacing: 12px;
+                            prev := TouchArea {
+                                width: 64px;
+                                height: 44px;
+                                clicked => {
+                                    root.prev-picture();
+                                }
+                                Rectangle {
+                                    background: prev.pressed ? #2f81f7 : #21262d;
+                                    border-radius: 8px;
+                                    animate background { duration: 120ms; }
+                                    Text {
+                                        text: "<";
+                                        color: #e6edf3;
+                                        font-size: 22px;
+                                        horizontal-alignment: center;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                            next := TouchArea {
+                                width: 64px;
+                                height: 44px;
+                                clicked => {
+                                    root.next-picture();
+                                }
+                                Rectangle {
+                                    background: next.pressed ? #2f81f7 : #21262d;
+                                    border-radius: 8px;
+                                    animate background { duration: 120ms; }
+                                    Text {
+                                        text: ">";
+                                        color: #e6edf3;
+                                        font-size: 22px;
+                                        horizontal-alignment: center;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Button card
+                Rectangle {
+                    background: #161b22;
+                    border-radius: 10px;
+                    VerticalLayout {
+                        padding: 16px;
+                        spacing: 8px;
+                        alignment: center;
+                        touch := TouchArea {
+                            width: 150px;
+                            height: 44px;
+                            clicked => {
+                                root.clicks += 1;
+                            }
+                            Rectangle {
+                                background: touch.pressed ? #2f81f7 : #1f6feb;
+                                border-radius: 8px;
+                                animate background { duration: 120ms; }
+                                Text {
+                                    text: "Press me";
+                                    color: #ffffff;
+                                    font-size: 18px;
+                                    horizontal-alignment: center;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+                        Text {
+                            text: "\{root.clicks} clicks";
+                            color: #e6edf3;
+                            font-size: 15px;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Animated level bar
+        Rectangle {
+            height: 56px;
+            background: #161b22;
+            border-radius: 10px;
+            VerticalLayout {
+                padding: 12px;
+                padding-left: 20px;
+                padding-right: 20px;
+                spacing: 6px;
+                Text {
+                    text: "ACTIVITY";
+                    color: #7d8590;
+                    font-size: 12px;
+                }
+                Rectangle {
+                    height: 14px;
+                    background: #0d1117;
+                    border-radius: 7px;
+                    clip: true;
+                    Rectangle {
+                        x: 0;
+                        width: parent.width * clamp(root.level, 0.0, 1.0);
+                        background: #2ea043;
+                        border-radius: 7px;
+                        animate width { duration: 400ms; easing: ease-in-out; }
+                    }
+                }
+            }
+        }
+    }
+}

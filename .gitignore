@@ -1,0 +1,7 @@
+/target
+
+# Build cache: the cut-out `.sfc_xip` image plus its hash (`tools/run.sh` skips
+# programming when they match), and the PNGs `build.rs` rasterises from SVG.
+assets/build/
+
+.DS_Store
